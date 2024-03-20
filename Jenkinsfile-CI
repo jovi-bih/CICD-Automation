@@ -10,7 +10,7 @@ pipeline {
     environment {
         //TOMCAT_HOST = 'localhost'
         //DOCKER_REGISTRY = 'jovibih'
-        DOCKER_USERNAME = "jovibih"
+        //DOCKER_USERNAME = "jovibih"
              // check the 'ID' in your Jenkins credentials
     }
 
@@ -21,23 +21,11 @@ pipeline {
                 deleteDir ()             
             }
         }
-
-        stage ('2. Git Checkout') {
-            // use pipeline syntax generator to generate below step
-            // 'Pipeline syntax' --> Steps 'Sample step' --> git (enter url & branch & generate)
-            steps {
-                dir ("Devops-CICD-Project1"){
-                  script {
-                    git branch: 'main', url: 'https://github.com/jovi-bih/Devops-CICD-Project1.git'
-                  }
-                }
-            }
-        }   
         
         stage("3. Maven Unit Test") {  
             // Test the individual units of code 
             steps{
-                dir ("Devops-CICD-Project1"){
+                dir ("CICD-Automation"){
                   sh 'mvn test'        
                 }
             }
@@ -46,7 +34,8 @@ pipeline {
         stage('4. Maven Build') {
             // Build the application into an executable file (.jar)
             steps{
-                dir ("Devops-CICD-Project1"){
+                dir ("CICD-Automation"){
+                  git branch: 'main', url: 'https://github.com/jovi-bih/CICD-Automation.git'
                   sh 'mvn clean install'   
                 }
             }
@@ -55,7 +44,7 @@ pipeline {
         stage("5. Maven Integration Test") {
             //  Test the interaction between different units of code
             steps{
-                dir ("Devops-CICD-Project1"){
+                dir ("CICD-Automation"){
                   sh 'mvn verify'          
                 }
             }
@@ -64,7 +53,7 @@ pipeline {
         stage('6. Docker Image Build') {
             // Build Docker Image 
             steps{
-                dir('Devops-CICD-Project1') {      // go to directory where 'Dockerfile' is stored
+                dir('CICD-Automation') {      // go to directory where 'Dockerfile' is stored
                     script {
                       def JOB = env.JOB_NAME.toLowerCase()           // Convert Jenkins Job name to lower-case
                       sh "docker build -t ${JOB}:${BUILD_NUMBER} ."  // 'JOB_NAME' & 'BUILD_NUMBER' are Jenkins Global variable
@@ -76,7 +65,7 @@ pipeline {
         stage('7. Docker Image Tag') {
             // Rename the Docker Image before pushing to Dockerhub
             steps{
-                dir('Devops-CICD-Project1') {      // go to directory where Docker Image is created
+                dir('CICD-Automation') {      // go to directory where Docker Image is created
                   script {
                     def JOB = env.JOB_NAME.toLowerCase() // Convert Jenkins Job name to lower-case
                     sh "docker tag ${JOB}:${BUILD_NUMBER} ${DOCKER_USERNAME}/${JOB}:v${BUILD_NUMBER}"
