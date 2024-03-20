@@ -25,7 +25,7 @@ pipeline {
         stage("3. Maven Unit Test") {  
             // Test the individual units of code 
             steps{
-                dir ("CICD-Automation"){
+                dir ("/root/CICD-Automation"){
                   sh 'mvn test'        
                 }
             }
