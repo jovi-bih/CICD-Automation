@@ -1,4 +1,4 @@
-FROM tomcat:9.0.86
-COPY target/ABCtechnologies-1.0.war /usr/local/tomcat/webapps
+FROM openjdk:9
+ADD target/ABCtechnologies-1.0.war ABCtechnologies-1.0.war
 EXPOSE 8080
-CMD /usr/local/tomcat/bin/catalina.sh run
+ENTRYPOINT [ "java", "-war","/ABCtechnologies-1.0.war" ] 
